@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="icon" href="img/logo.png">
+    <title>Chat Node.JS e SOCKET.IO</title>
+</head>
+
+<body>
+    <header>
+        <img src="img/logo2.png" id="logo">
+        <img src="img/configuracoes.png" id="config" onclick="apagarConversa()">
+    </header>
+    <form>
+        <main>
+            <div id="maioral">
+                <div id="box-esquerda">
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">Emily Soares</p>
+                                <p>Bom dia, eu acho que é uma pessoa...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">Érica Gonçalves</p>
+                                <p>Talvez se eu conseguir ir lá no sábado...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">José Barreto</p>
+                                <p>Obrigada pelo convite!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">João Marcos</p>
+                                <p>Oi, tudo bem?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">Anna Dantas</p>
+                                <p>Eu amei, sério!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">Sérgio Costi</p>
+                                <p>Boa tarde, hoje eu estarei a disposição...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caixa">
+                        <div class="itens">
+                            <img src="img/user1.png" id="user">
+                            <div class="inf">
+                                <p class="usuario">Sérgio Costi</p>
+                                <p>Boa tarde, hoje eu estarei a disposição...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="box-direita">
+                    <div id="detalhes">
+                        <img id="user2" src="img/user2.png" onclick="focouser()">
+                        <input type="text" id="nome" placeholder="Seu nome de usuário">
+                    </div>
+                    <ul id="mensagens"></ul>
+
+                    <div id="caixa-enviar">
+                        <input type="text" id="mensagem" placeholder="Escreva sua mensagem...">
+                        <button id="btn-enviar">
+                            <img id="icon-enviar" src="img/enviar.png" alt="">
+                        </button>
+                    </div>
+    </form>
+    </div>
+    </div>
+    </main>
+
+    <!-- Importar o script do Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        //Cria uma instancia do Socket.IO
+        const socket = io();
+
+        //Seleciona o input do nome do usuário
+        const nomeInput = document.getElementById('nome');
+        //Seleciona o input da mensagem
+        const mensagemInput = document.getElementById('mensagem');
+        //Seleciona a lista de mensagens
+        const mensagens = document.getElementById('mensagens');
+
+        //Adiciona um evento para o envio do formulário
+        document.querySelector('form').addEventListener('submit', evento => {
+            //Previne o envio padrão do formulario para não atualizar a página
+            evento.preventDefault();
+            //Obtém o valor do input do nome do usuário
+            const nome = nomeInput.value;
+            //Obtém o valor do input da mensagem
+            const mensagem = mensagemInput.value;
+
+            //Função para botão com ENTER do teclado
+            const searchBtn = document.querySelector("#btn-enviar");
+            mensagens.addEventListener("keyup", (e) => {
+
+                if (e.code === "Enter") {
+                    const enviar = e.target.value;
+                    mensagem(enviar);
+                }
+            });
+
+
+            //Método JAVASCRIpt que verifica os valores válidos(Não esta em branco os campos)
+            //EMIT envia um evento chamado 'chat message' com o oebjeto contendo os valores de nome e mensagem para o servidor
+            //TRIM é um método 
+            nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
+
+            //Limpa o input da mensagem
+            mensagemInput.value = '';
+            //Desabilita o input do nome do usuário após a primeira mensagem
+            nomeInput.disabled = true;
+        })
+
+        //Adiciona um evento de mensagem recebido pelo servidor
+        socket.on('chat message', dados => {
+            //Cria um elemento de lista para exibir a mensagem
+            const lista = document.createElement('li');
+
+            if (dados.nome === nomeInput.value) {
+                lista.setAttribute('id', 'pessoa1');
+            } else {
+                lista.setAttribute('id', 'pessoa2');
+            }
+
+            //Define o texto da mensagem
+            lista.textContent = `${dados.nome}: ${dados.mensagem}`;
+            //Adiciona o elemento de lista de mensagens
+            mensagens.appendChild(lista);
+        })
+
+
+        //Cria uma função para caixa do usuário caso clique em seu ícone
+        function focouser() {
+            var pai = document.body;
+            // Criar elemento
+            var divs = document.createElement('div');
+
+            // Criar o nó de texto e tags
+            var texto = document.createElement('h4');
+            var txt = document.createTextNode(nomeInput.value);
+            var imagem = document.createElement('img');
+            var imagem2 = document.createElement('img');
+            var botaoo = document.createElement('input');
+            var txtt = document.createTextNode("Escolher foto");
+
+            imagem2.src = "img/fechar.png";
+            imagem.src = document.getElementById('user2').src ;//solução aqui! :D
+            imagem.id = 'user1';
+            imagem.style.width = "70px";
+            imagem2.style.width = "35px";
+            
+            imagem2.classList.add("img2");
+            divs.classList.add("boxzinha");
+            divs.appendChild(imagem2);
+            divs.appendChild(imagem);
+            botaoo.appendChild(txtt);
+            botaoo.id = 'teste';
+            texto.appendChild(txt);
+            
+            // Anexar o nó de texto ao elemento h1
+            divs.appendChild(texto);
+            divs.appendChild(botaoo);
+
+            // Agora sim, inserir (anexar) o elemento filho (titulo) ao elemento pai (body)
+            pai.appendChild(divs);
+            
+            //Fechar caixa do usuário ao clicar no ícone
+            const botao = document.querySelector(".img2");
+            botao.addEventListener("click", (e) => {
+                divs.remove(); 
+            });
+
+            //Criando elementos para trocar a foto de perfil pelo appendchild.
+            var divisoria = document.createElement("div");
+            var foto = document.createElement("img");
+
+            divisoria.id = "imagem";
+            foto.id = 'id_sua_img';
+            botaoo.classList.add("botao_foto_perfil");
+            botaoo.type = 'file';
+            botaoo.name = 'flefoto';
+
+            //ADICIONAR FOTO DE PERFIL 
+            $("#teste").change(function(){
+                if($(this).val()){ // só se o input não estiver vazio
+                var img = this.files[0]; // seleciona o arquivo do input
+                var f = new FileReader(); // cria o objeto FileReader
+                f.onload = function(e){ // ao carregar a imagem
+                    $("#id_sua_img").attr("src",e.target.result); // altera o src da imagem
+                    var userzinho = document.querySelector("#user2").src = foto.src
+                    document.getElementById("user2").style.borderRadius = "90%";
+                }
+                f.readAsDataURL(img); // lê o arquivo
+
+                //Inserindo elementos e alterando
+                divs.appendChild(divisoria);
+                document.getElementById("user1").innerHTML = divs.appendChild(foto);
+                console.log(id_sua_img)
+
+                var fotinha = document.createElement("div")
+
+                divs.style.height = '540px';
+                divs.appendChild(texto);
+                divs.appendChild(botaoo);
+                imagem.remove();
+                }
+            });
+            }
+            function apagarConversa(){
+                const tdsMensagens = document.querySelectorAll('li');
+                const configuracao = document.querySelector("#config");
+
+                configuracao.addEventListener("click", (e) => {
+                for(var i = 0; i < tdsMensagens.length; i++){
+
+                    tdsMensagens[i].remove(); 
+                }
+                });
+        }
+
+    </script>
+</body>
+
+</html>
