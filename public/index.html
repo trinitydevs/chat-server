@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link rel="icon" href="img/logo.png">
-    <title>Chat Node.JS e SOCKET.IO</title>
+    <title>Chat Online</title>
 </head>
 
 <body>
     <header>
         <img src="img/logo2.png" id="logo">
-        <img src="img/configuracoes.png" id="config" onclick="apagarConversa()">
+        <img src="img/configuracoes.png" id="config" onclick="apagarConversa()" title="Apagar conversa">
     </header>
     <form>
         <main>
@@ -93,7 +93,7 @@
 
                 <div id="box-direita">
                     <div id="detalhes">
-                        <img id="user2" src="img/user2.png" onclick="focouser()">
+                        <img id="user2" src="img/user2.png" onclick="focouser()" title="Perfil">
                         <input type="text" id="nome" placeholder="Seu nome de usuário">
                     </div>
                     <ul id="mensagens"></ul>
